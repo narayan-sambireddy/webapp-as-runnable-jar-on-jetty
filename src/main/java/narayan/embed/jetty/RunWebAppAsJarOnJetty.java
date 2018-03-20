@@ -17,7 +17,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
 @Configuration
 @ComponentScan
-public interface RunWebAppAsJar {
+public interface RunWebAppAsJarOnJetty {
 
     String CONTEXT_PATH = "/app";
     String URL_MAPPING = "/";
@@ -27,7 +27,7 @@ public interface RunWebAppAsJar {
     static void main(String[] args) throws Exception {
 
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.register(RunWebAppAsJar.class);
+        context.register(RunWebAppAsJarOnJetty.class);
 
         ServletContextHandler servletContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
         servletContext.setContextPath(CONTEXT_PATH);
