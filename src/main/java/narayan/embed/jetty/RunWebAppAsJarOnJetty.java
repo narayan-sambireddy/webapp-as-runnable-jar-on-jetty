@@ -5,14 +5,17 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import java.util.Objects;
+
 /**
  * The Main Configuration of the App
  *
- * @author narayana
+ * @author narayan-sambireddy
  */
 @EnableWebMvc
 @Configuration
@@ -21,22 +24,27 @@ public interface RunWebAppAsJarOnJetty {
 
     String CONTEXT_PATH = "/app";
     String URL_MAPPING = "/";
-    Integer SERVER_PORT = 8080;
-
 
     static void main(String[] args) throws Exception {
 
-        AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.register(RunWebAppAsJarOnJetty.class);
-
         ServletContextHandler servletContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
         servletContext.setContextPath(CONTEXT_PATH);
-        servletContext.addServlet(new ServletHolder(new DispatcherServlet(context)),URL_MAPPING);
+        servletContext.addServlet(new ServletHolder(new DispatcherServlet(webContext())),URL_MAPPING);
 
-        Server server = new Server(SERVER_PORT);
+        Server server = new Server(getPort());
         server.setHandler(servletContext);
         server.start();
         server.join();
 
+    }
+
+    private static WebApplicationContext webContext() {
+        return new AnnotationConfigWebApplicationContext() {{
+           register(RunWebAppAsJarOnJetty.class);
+        }};
+    }
+
+    private static Integer getPort() {
+        return Integer.parseInt(Objects.toString(System.getProperty("PORT"), "8080"));
     }
 }
